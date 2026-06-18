@@ -2,27 +2,20 @@ const input = document.getElementById('code-input');
 const preview = document.getElementById('preview');
 const buttons = document.querySelectorAll('.toggle-btn');
 
-// Yung apat na buttons
 const btnHtml = document.getElementById('btn-html');
 const btnCss = document.getElementById('btn-css');
 const btnJs = document.getElementById('btn-js');
 const btnFull = document.getElementById('btn-full');
 
 function updatePreview(mode) {
-  // Kunin yung code ng user
   const raw = input.value;
-
-  // I-extract ang HTML, CSS, JS
   const htmlMatch = raw.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
   const cssMatch = raw.match(/<style[^>]*>([\s\S]*?)<\/style>/i);
   const jsMatch = raw.match(/<script[^>]*>([\s\S]*?)<\/script>/i);
-
   const htmlContent = htmlMatch ? htmlMatch[1] : raw;
   const cssContent = cssMatch ? cssMatch[1] : '';
   const jsContent = jsMatch ? jsMatch[1] : '';
-
   let output = '';
-
   if (mode === 'html') {
     output = htmlContent;
   } else if (mode === 'css') {
@@ -32,35 +25,14 @@ function updatePreview(mode) {
   } else {
     output = `<style>${cssContent}</style>${htmlContent}<script>${jsContent}<\/script>`;
   }
-
   preview.srcdoc = output;
 }
 
-// Button clicks
-btnHtml.addEventListener('click', () => {
-  setActive(btnHtml);
-  updatePreview('html');
-});
-
-btnCss.addEventListener('click', () => {
-  setActive(btnCss);
-  updatePreview('css');
-});
-
-btnJs.addEventListener('click', () => {
-  setActive(btnJs);
-  updatePreview('js');
-});
-
-btnFull.addEventListener('click', () => {
-  setActive(btnFull);
-  updatePreview('full');
-});
-
-// Update preview habang nagta-type
-input.addEventListener('input', () => {
-  updatePreview('full');
-});
+btnHtml.addEventListener('click', () => { setActive(btnHtml); updatePreview('html'); });
+btnCss.addEventListener('click', () => { setActive(btnCss); updatePreview('css'); });
+btnJs.addEventListener('click', () => { setActive(btnJs); updatePreview('js'); });
+btnFull.addEventListener('click', () => { setActive(btnFull); updatePreview('full'); });
+input.addEventListener('input', () => { updatePreview('full'); });
 
 function setActive(activeBtn) {
   buttons.forEach(btn => btn.classList.remove('active'));
@@ -72,13 +44,9 @@ const breakdownResult = document.getElementById('breakdown-result');
 
 breakdownBtn.addEventListener('click', async () => {
   const code = input.value.trim();
+  if (!code) { alert('Mag-paste muna ng code!'); return; }
 
-  if (!code) {
-    alert('Mag-paste muna ng code!');
-    return;
-  }
-
-  breakdownBtn.textContent = '⏳ Analyzing...';
+  breakdownBtn.textContent = 'Analyzing...';
   breakdownBtn.disabled = true;
   breakdownResult.innerHTML = '';
 
@@ -96,9 +64,12 @@ Respond ONLY in this JSON format (no markdown, no backticks):
 }`;
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await fetch('https://cors-anywhere.herokuapp.com/https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-requested-with': 'XMLHttpRequest'
+      },
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
         max_tokens: 1000,
@@ -111,13 +82,13 @@ Respond ONLY in this JSON format (no markdown, no backticks):
     const parsed = JSON.parse(raw.replace(/```json|```/g, '').trim());
 
     const sections = [
-      { label: '📄 HTML', key: 'html' },
-      { label: '🎨 CSS', key: 'css' },
-      { label: '⚡ JavaScript', key: 'js' }
+      { label: 'HTML', key: 'html' },
+      { label: 'CSS', key: 'css' },
+      { label: 'JavaScript', key: 'js' }
     ];
 
     let html = `<div class="breakdown-card">
-      <div class="breakdown-card-header">💡 Summary</div>
+      <div class="breakdown-card-header">Summary</div>
       <div class="breakdown-card-body">${parsed.summary}</div>
     </div>`;
 
@@ -134,6 +105,6 @@ Respond ONLY in this JSON format (no markdown, no backticks):
     breakdownResult.innerHTML = '<p style="color:red;">Something went wrong. Try again!</p>';
   }
 
-  breakdownBtn.textContent = '🧠 Break it down';
+  breakdownBtn.textContent = 'Break it down';
   breakdownBtn.disabled = false;
 });
