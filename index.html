@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Peelr</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <h1>Peelr 🧅</h1>
+    <p>Peel back the layers of any website</p>
+  </header>
+
+  <main>
+    <!-- Input area -->
+    <textarea id="code-input" placeholder="Paste your HTML, CSS, or JS code here..."></textarea>
+
+    <!-- Toggle buttons -->
+    <div class="toggle-bar">
+      <button class="toggle-btn active" id="btn-html">HTML only</button>
+      <button class="toggle-btn" id="btn-css">+ CSS</button>
+      <button class="toggle-btn" id="btn-js">+ JS</button>
+      <button class="toggle-btn" id="btn-full">Full site</button>
+    </div>
+
+    <!-- Live preview -->
+    <div class="preview-wrap">
+      <p class="preview-label">Live Preview</p>
+      <iframe id="preview"></iframe>
+    </div>
+
+    <!-- AI Breakdown -->
+    <button id="breakdown-btn">🧠 Break it down</button>
+    <div id="breakdown-result"></div>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
